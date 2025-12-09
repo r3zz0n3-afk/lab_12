@@ -12,8 +12,6 @@ public class LogicsImpl implements Logics {
 
     private static final String ERROR_MESSAGE = "Unimplemented method";
     private final List<Integer> valueList;
-    private final List<Boolean> stateList;
-    private final int limitValue;
 
     /**
      * Constructor.
@@ -21,17 +19,10 @@ public class LogicsImpl implements Logics {
      * @param size the size of the logics
      */
     public LogicsImpl(final int size) {
-        //throw new UnsupportedOperationException(ERROR_MESSAGE);
-        limitValue = size;
         valueList = new ArrayList<>(size);
-        stateList = new ArrayList<>(size);
-        setup();
-    }
-
-    private void setup() {
-        for (int i = 0; i < limitValue; i++) {
+        //inizialation list at all zero
+        for (int i = 0; i < size; i++) {
             valueList.add(0);
-            stateList.add(true);
         }
     }
 
@@ -56,7 +47,7 @@ public class LogicsImpl implements Logics {
      */
     @Override
     public List<Boolean> enabledStates() {
-        return Collections.unmodifiableList(stateList);
+        return valueList.stream().map(it -> it < valueList.size()).toList();
     }
 
     /**
@@ -65,9 +56,6 @@ public class LogicsImpl implements Logics {
     @Override
     public int hit(final int elem) {
         valueList.set(elem, valueList.get(elem) + 1);
-        if (valueList.get(elem) == limitValue) {
-            stateList.set(elem, false);
-        }
         return valueList.get(elem);
     }
 
@@ -84,11 +72,6 @@ public class LogicsImpl implements Logics {
      */
     @Override
     public boolean toQuit() {
-        for (final var v : stateList) {
-            if (v) {
-                return false;
-            }
-        }
-        return true;
+        return enabledStates().stream().allMatch(it -> it == false);
     }
 }

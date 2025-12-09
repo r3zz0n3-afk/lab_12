@@ -19,12 +19,15 @@ public class LogicsImpl implements Logics {
 
     @Override
     public String hit(Pair<Integer, Integer> elem) {
-        if(grid[elem.x().intValue()][elem.y().intValue()] == " " ) {
-            grid[elem.x().intValue()][elem.y().intValue()] = "*";
+        int x = elem.x().intValue();
+        int y = elem.y().intValue();
+        if(grid[x][y] == " " ) {
+            grid[x][y] = "*";
         } else {
-            grid[elem.x().intValue()][elem.y().intValue()] = " ";
+            grid[x][y] = " ";
         }
-        return grid[elem.x().intValue()][elem.y().intValue()];
+
+        return grid[x][y] ;
     }
 
     @Override
