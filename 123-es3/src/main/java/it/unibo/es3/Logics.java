@@ -1,15 +1,11 @@
 package it.unibo.es3;
 
 public interface Logics {
-    
-    /**
-     * Change the state of slot " " --> " *" or otherwise.
-     *
-     * @param elem the slot to changed
-     * @return the new state a button should show after being pressed
-     */
-    String hit(Pair<Integer, Integer> elem);
 
+    /**
+     * A method to use for exspand "*" in the grid.
+     */
+    void expand();
 
     /**
      * True if it is time to quit (i.e., all slots have "*" in a row).
@@ -17,4 +13,12 @@ public interface Logics {
      * @return whether it is time to quit
      */
     boolean toQuit();
+
+    /**
+     * Use for retunr a status of specific cell.
+     * 
+     * @param p codination of grid
+     * @return the status of cell
+     */
+    String getCell (final Pair<Integer, Integer> p);
 }

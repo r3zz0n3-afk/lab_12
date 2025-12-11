@@ -7,9 +7,9 @@ import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.io.Serial;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -20,7 +20,7 @@ public final class GUI extends JFrame {
 
     @Serial
     private static final long serialVersionUID = 1L;
-    private final List<JButton> cells = new ArrayList<>();
+    private final Map<Pair<Integer,Integer>, JButton> cells = new HashMap<>();
     private final Logics logics;
     private Random rnd = new Random();
     /**
@@ -29,7 +29,6 @@ public final class GUI extends JFrame {
      * @param width the size of the grid
      */
     public GUI(final int width) {
-        this.logics = new LogicImpl(width);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         // Create a panel with a grid layout
         final JPanel panel = new JPanel(new BorderLayout());
@@ -40,22 +39,34 @@ public final class GUI extends JFrame {
             for (int j = 0; j < width; j++) {
                 final var pos = new Pair<>(j, i);
                 final JButton button = new JButton(" ");
-                this.cells.add(button);
-                button.addActionListener(e -> button.setText(logics.hit(pos)));
+                this.cells.put(pos, button);
+                //button.addActionListener(e -> button.setText(logics.hit(pos)));
                 grid.add(button);
             }
         }
-        // Mark three distinct random cells with "*"
-        final int total = width * width;
-        final Set<Integer> picks = new HashSet<>();
-        while (picks.size() < 3) {
-            picks.add(this.rnd.nextInt(total));
+        // Mark three distinct random cells with "*" 
+        final Set<Pair<Integer, Integer>> picks = new HashSet<>();
+        while (picks.size() < 3 ) {
+            final int x = this.rnd.nextInt(width);
+            final int y = this.rnd.nextInt(width);
+            picks.add(new Pair<>(x, y));
         }
-        for (final Integer idx : picks) {
-            this.cells.get(idx).setText("*");
+        for (final Pair<Integer, Integer> p : picks) {
+            this.cells.get(p).setText("*");  
         }
-        final JButton exspanziButton = new JButton(">");
-        panel.add(exspanziButton, BorderLayout.SOUTH);
+        
+        this.logics = new LogicImpl(width, picks);
+        final JButton exspantionButton = new JButton(">");
+        exspantionButton.addActionListener(e -> {
+            this.logics.expand();
+            for (final Pair<Integer, Integer> p : cells.keySet()) {
+                cells.get(p).setText(this.logics.getCell(p));
+            }
+            if (logics.toQuit()) {
+                dispose();
+            }
+        });
+        panel.add(exspantionButton, BorderLayout.SOUTH);
         panel.add(grid, BorderLayout.AFTER_LINE_ENDS);
         pack();
         this.setVisible(true);
